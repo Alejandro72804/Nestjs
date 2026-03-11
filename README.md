@@ -1,13 +1,13 @@
-#Notas para Practica de endpoint en NestJs
+# Notas para Practica de endpoint en NestJs
 
-##Endpoints
-###Bienvenida -> Origen
+## Endpoints
+### Bienvenida -> Origen
 [GET][http://](http://localhost:4001/)
 
     Hola mundo, Yo soy ALejandro, desde NestJs!
-###Desplegar Todos los usuarios
+### Desplegar Todos los usuarios
 [GET][http://](http://localhost:4001/users) > Return all users (200)
-###Buscar un usuario en especifico (Parametro)
+### Buscar un usuario en especifico (Parametro)
 [GET][http://](http://localhost:4001/users/1) > Return users 1 (200)
 [GET][http://](http://localhost:4001/users/2) > Return users 2 (200)
 
