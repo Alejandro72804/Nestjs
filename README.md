@@ -104,3 +104,6 @@ Return status user deleted **(200)**
 - TypeScript
 - Node.js
 - REST API
+
+📌 **Nota:**  
+Este proyecto hace parte de una práctica para comprender la estructura de controladores y rutas en **NestJS** mediante la implementación de un CRUD básico de usuarios.
