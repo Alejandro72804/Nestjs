@@ -14,7 +14,7 @@ http://localhost:4001
 
 ### 🟢 Bienvenida → Origen
 
-[GET](http://localhost:4001/)
+[URL](http://localhost:4001/)
 
 Respuesta:
 
