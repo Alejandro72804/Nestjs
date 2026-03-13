@@ -10,11 +10,12 @@ import {
   UnprocessableEntityException,
   ForbiddenException,
 } from '@nestjs/common';
+import { CreateUserDto } from './user.dto';
 
 interface Users {
   id: string;
-  name: string;
-  email: string;
+  name?: string;
+  email?: string;
 }
 
 @Controller('users')
@@ -78,9 +79,8 @@ export class UsersController {
     return user;
   }
 
-  // //opcional:
   @Post()
-  createUser(@Body() body: Users) {
+  createUser(@Body() body: CreateUserDto) {
     const email = body.email;
     if (
       email &&
@@ -95,6 +95,24 @@ export class UsersController {
     this.users.push(newUser);
     return newUser;
   }
+
+  // //opcional:
+  // @Post()
+  // createUser(@Body() body: Users) {
+  //   const email = body.email;
+  //   if (
+  //     email &&
+  //     !(email.includes('@') || email.includes('.com') || email.includes('.co'))
+  //   ) {
+  //     this.msjVerifEmail();
+  //   }
+  //   const newUser = {
+  //     ...body,
+  //     id: (this.users.length + 1).toString(),
+  //   };
+  //   this.users.push(newUser);
+  //   return newUser;
+  // }
   //Alternativa, corta pero no tan profesional
   //  @Post()
   // createUser(@Body() body: Users) {
