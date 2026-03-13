@@ -10,7 +10,7 @@ import {
   UnprocessableEntityException,
   ForbiddenException,
 } from '@nestjs/common';
-import { CreateUserDto } from './user.dto';
+import { CreateUserDto, UpdUserDto } from './user.dto';
 
 interface Users {
   id: string;
@@ -135,22 +135,15 @@ export class UsersController {
   }
 
   @Put(':id')
-  updUser(@Param('id') id: string, @Body() changes: Users) {
-    const email = changes?.email;
-    if (
-      email &&
-      !(email.includes('@') || email.includes('.com') || email.includes('.co'))
-    ) {
-      this.msjVerifEmail();
-    }
+  updUser(@Param('id') id: string, @Body() changes: UpdUserDto) {
     const position = this.users.findIndex((user) => user.id === id);
     if (position === -1) {
-      this.msjErr();
+      return this.msjErr();
     }
-    const currentDate: Users = this.getterUsers(position);
-    const updUser = {
-      ...currentDate,
-      ...changes,
+    const currentData = this.getterUsers(position);
+    const updUser: Users = {
+      ...currentData,
+      ...(changes as Partial<Users>),
     };
     this.setterUsers(position, updUser);
     return this.getterUsers(position);
