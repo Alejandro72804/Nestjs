@@ -1,3 +1,4 @@
+//creacion de Endpoints utilizando servicios y escalabilidad
 import {
   Controller,
   Get,
@@ -6,146 +7,36 @@ import {
   Body,
   Delete,
   Put,
-  NotFoundException,
-  UnprocessableEntityException,
-  ForbiddenException,
 } from '@nestjs/common';
 import { CreateUserDto, UpdUserDto } from './user.dto';
-
-interface Users {
-  id: string;
-  name?: string;
-  email?: string;
-}
+import { UsersService } from './users.service';
 
 @Controller('users')
 export class UsersController {
-  private users: Users[] = [
-    {
-      id: '1',
-      name: 'John Doe',
-      email: 'john.doe@example.com',
-    },
-    {
-      id: '2',
-      name: 'Jane Smith',
-      email: 'jane.smith@example.com',
-    },
-    {
-      id: '3',
-      name: 'Maribel Montalvo',
-      email: 'maribel.montalvo@example.com',
-    },
-  ];
-
-  //Control Getter and Setters
-  public getterUsers(idx: number): Users {
-    return this.users[idx];
-  }
-
-  private setterUsers(indx: number, obj: Users) {
-    this.users[indx] = {
-      ...obj,
-    };
-  }
-  private msjErr(): void {
-    throw new NotFoundException('User not Found');
-  }
-
-  private msjVerifEmail(): void {
-    throw new UnprocessableEntityException('Correo email invalido');
-  }
-
-  private msjPermiso(): void {
-    throw new ForbiddenException(
-      'No tienes autorizaci+on para acceder a esta informacion',
-    );
-  }
+  constructor(private usersService: UsersService) {}
 
   //endpoint
   @Get()
   getUsers() {
-    return this.users;
+    return this.usersService.findAll();
   }
   @Get(':id')
   findUser(@Param('id') id: string) {
-    const user = this.users.find((user) => user.id === id);
-
-    if (!user) {
-      this.msjErr();
-    } else if (user.id === '1') {
-      this.msjPermiso();
-    }
-    return user;
+    return this.usersService.findOne(id);
   }
 
   @Post()
   createUser(@Body() body: CreateUserDto) {
-    const email = body.email;
-    if (
-      email &&
-      !(email.includes('@') || email.includes('.com') || email.includes('.co'))
-    ) {
-      this.msjVerifEmail();
-    }
-    const newUser = {
-      ...body,
-      id: (this.users.length + 1).toString(),
-    };
-    this.users.push(newUser);
-    return newUser;
+    return this.usersService.create(body);
   }
-
-  // //opcional:
-  // @Post()
-  // createUser(@Body() body: Users) {
-  //   const email = body.email;
-  //   if (
-  //     email &&
-  //     !(email.includes('@') || email.includes('.com') || email.includes('.co'))
-  //   ) {
-  //     this.msjVerifEmail();
-  //   }
-  //   const newUser = {
-  //     ...body,
-  //     id: (this.users.length + 1).toString(),
-  //   };
-  //   this.users.push(newUser);
-  //   return newUser;
-  // }
-  //Alternativa, corta pero no tan profesional
-  //  @Post()
-  // createUser(@Body() body: Users) {
-  //   const nid = this.users.length + 1;
-  //   body.id = nid.toString();
-  //   this.users.push(body);
-  //   return body;
-  // }
 
   @Delete(':id')
   delUser(@Param('id') id: string) {
-    const position = this.users.findIndex((user) => user.id === id);
-    if (position === -1) {
-      this.msjErr();
-    }
-    this.users = this.users.filter((user) => user.id !== id);
-    return {
-      message: 'User Delete',
-    };
+    return this.usersService.delete(id);
   }
 
   @Put(':id')
   updUser(@Param('id') id: string, @Body() changes: UpdUserDto) {
-    const position = this.users.findIndex((user) => user.id === id);
-    if (position === -1) {
-      return this.msjErr();
-    }
-    const currentData = this.getterUsers(position);
-    const updUser: Users = {
-      ...currentData,
-      ...(changes as Partial<Users>),
-    };
-    this.setterUsers(position, updUser);
-    return this.getterUsers(position);
+    return this.usersService.update('id', changes);
   }
 }
