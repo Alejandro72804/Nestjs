@@ -4,7 +4,10 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
+import { User } from '../../users/entities/user.entity';
 
 @Entity({ name: 'posts' })
 export class Post {
@@ -39,4 +42,8 @@ export class Post {
     name: 'updated_at',
   })
   updatedAt!: Date;
+
+  @ManyToOne(() => User, (user) => user.posts, { nullable: false })
+  @JoinColumn({ name: 'user_id' })
+  user!: User;
 }

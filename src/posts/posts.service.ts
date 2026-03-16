@@ -31,7 +31,10 @@ export class PostsService {
 
   async create(body: CreatePostDto) {
     try {
-      const newPost = await this.postsRepository.save(body);
+      const newPost = await this.postsRepository.save({
+        ...body,
+        user: { id: body.userid },
+      });
       return newPost;
     } catch {
       throw new BadRequestException('Error creating post');
