@@ -4,7 +4,7 @@ import {
   ForbiddenException,
   BadRequestException,
 } from '@nestjs/common';
-import { CreateUserDto, UpdUserDto } from './user.dto';
+import { CreateUserDto, UpdUserDto } from './dtos/user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
@@ -21,7 +21,10 @@ export class UsersService {
   }
 
   async findOne(id: number) {
-    const user = await this.usersRepository.findOneBy({ id });
+    const user = await this.usersRepository.findOne({
+      where: { id },
+      relations: ['profile'],
+    });
     if (!user) {
       throw new NotFoundException('User with id ${id} not found');
     }
@@ -46,19 +49,24 @@ export class UsersService {
   }
 
   async update(id: number, changes: UpdUserDto) {
-    const user = await this.findOne(id);
-    if (!user) {
-      throw new NotFoundException('User with id: ' + id + ' not found');
+    try {
+      const user = await this.findOne(id);
+      const updUser = this.usersRepository.merge(user, changes);
+      const userUpdated = await this.usersRepository.save(updUser);
+      return userUpdated;
+    } catch {
+      throw new BadRequestException('Error updating user');
     }
-    const updUser = this.usersRepository.merge(user, changes);
-    return this.usersRepository.save(updUser);
   }
 
   async delete(id: number) {
-    const user = await this.findOne(id);
-    await this.usersRepository.delete(user.id);
-    return {
-      message: 'User Delete',
-    };
+    try {
+      await this.usersRepository.delete(id);
+      return {
+        message: 'User Delete',
+      };
+    } catch {
+      throw new BadRequestException('Error deleting user');
+    }
   }
 }
